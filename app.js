@@ -12,7 +12,7 @@ const { Strategy: GoogleStrategy } = require("passport-google-oauth20");
 const jwt = require("jsonwebtoken");
 const session = require("express-session");
 const User = require('./models/User');
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 9000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/your-database-name';
 // Connect to MongoDB
 app.use(
