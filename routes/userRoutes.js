@@ -4,6 +4,7 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const userAuth = require('../middleware/userAuth');
 const multer = require("multer");
+
 const CardStorage = multer.diskStorage({
     destination: function (req, file, cb) {
       // destination is used to specify the path of the directory in which the files have to be stored
@@ -25,6 +26,10 @@ const CardStorage = multer.diskStorage({
       fileSize: 20 * 1024 * 1024, // 20MB in bytes
     },
   });
+
+
+//get
+
 router.get('/protected', userAuth, userController.protected);
 router.get('/details', userAuth, userController.details);
 router.get('/gallery', userController.getGallery);

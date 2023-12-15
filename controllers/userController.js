@@ -25,6 +25,7 @@ const register = async (req, res) => {
       union,
       addaar,
       pan_card,
+      blood_group
     } = req.body;
 
     // // Step 2: Validate User Input
@@ -62,6 +63,7 @@ const register = async (req, res) => {
       union,
       addaar,
       pan_card,
+      blood_group
     });
     const savedUser = await newUser.save();
 
@@ -150,6 +152,7 @@ const update = async (req, res) => {
       union, // Change "Union" to "union" if needed
       addaar,
       pan_card,
+      blood_group
     } = req.body;
 
     const user = await User.findById(req.user.userId);
@@ -193,6 +196,10 @@ const update = async (req, res) => {
     }
     if (pan_card) {
       user.pan_card = pan_card;
+    }
+
+    if (blood_group) {
+      user.blood_group = blood_group;
     }
 
     await user.save();
@@ -490,6 +497,10 @@ const createIdCard = async (req, res) => {
     ctx.fillText(`Email: ${user.email}`, 100, 60);
     ctx.fillText(`Phone: ${user.phoneNumber}`, 100, 90);
     ctx.fillText(`DOB: ${user.date_of_birth}`, 100, 120);
+    if(user.blood_group){
+      
+      ctx.fillText(`Blood Group: ${user.blood_group}`, 100, 150);
+    }
 
     // Generate QR code with user ID
     const qrCodeDataUrl = await qr.toDataURL(user._id.toString());
