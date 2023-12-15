@@ -109,7 +109,7 @@ router.post('/event',eventImage.single('image'),adminAuth,adminController.addEve
 
 router.delete('/user/:id',adminAuth,adminController.deleteUser);
 router.delete('/deleteImage/:id',adminAuth,adminController.deleteImage);
-router.delete('/slogan/:id',adminAuth,adminController.deleteUser);
+router.delete('/slogan/:id',adminAuth,adminController.deleteSlogan);
 router.delete("/calendar-event/:id",adminAuth,adminController.deleteCalendarEvent);
 router.delete("/ad/:id",adminAuth,adminController.deleteAd);
 router.delete('/mandalam/:id',adminController.deleteMandalam);
