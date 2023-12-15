@@ -4,6 +4,10 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Gallery = require("../models/Galley");
 const { sendMail } = require("./emailController");
+const { createCanvas, loadImage } = require('canvas');
+const qr = require('qrcode');
+const fs = require('fs');
+
 const jwtSecret = process.env.JWT_SECRET;
 const register = async (req, res) => {
   try {
@@ -459,6 +463,55 @@ const verifyForgotPasswordOTP = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 }
+const createIdCard = async (req, res) => {
+  try {
+    // Assuming you have a User model defined using Mongoose
+    const user = await User.findById(req.user.userId);
+
+    // Get the profile image from the request
+    const profileImage = req.file;
+
+    // Create a canvas for the ID card
+    const canvas = createCanvas(400, 250); // Increased height for QR code and white background
+    const ctx = canvas.getContext('2d');
+
+    // Draw white background
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Load the user's profile image
+    const image = await loadImage(profileImage.path);
+    ctx.drawImage(image, 10, 10, 80, 80);
+
+    // Draw text fields on the canvas
+    ctx.font = '16px Arial';
+    ctx.fillStyle = 'black'; // Text color
+    ctx.fillText(`Name: ${user.name}`, 100, 30);
+    ctx.fillText(`Email: ${user.email}`, 100, 60);
+    ctx.fillText(`Phone: ${user.phoneNumber}`, 100, 90);
+    ctx.fillText(`DOB: ${user.date_of_birth}`, 100, 120);
+
+    // Generate QR code with user ID
+    const qrCodeDataUrl = await qr.toDataURL(user._id.toString());
+    const qrCodeImage = await loadImage(qrCodeDataUrl);
+    ctx.drawImage(qrCodeImage, 10, 150, 80, 80); // Adjusted position for QR code
+
+    // Convert the canvas to a buffer
+    const buffer = canvas.toBuffer();
+
+    // Set the response headers for image download
+    res.set({
+      'Content-Type': 'image/png',
+      'Content-Disposition': 'attachment; filename=id-card.png',
+    });
+
+    // Send the buffer as the response
+    res.status(200).send(buffer);
+  } catch (error) {
+    console.error("Error during ID card generation:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 module.exports = {
   register,
   login,
@@ -474,5 +527,6 @@ module.exports = {
   getGalleryLikes,
   resetPassword,
   forgotPassword,
-  verifyForgotPasswordOTP
+  verifyForgotPasswordOTP,
+  createIdCard
 };
