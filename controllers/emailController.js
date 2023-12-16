@@ -25,7 +25,7 @@ async function sendMail(to, subject, text, html) {
     });
 
     const mailOptions = {
-      from: `Sanjay Developer <${process.env.EMAIL}>`,
+      from: `INTUC Thrissur <${process.env.EMAIL}>`,
       to,
       subject,
       text,
