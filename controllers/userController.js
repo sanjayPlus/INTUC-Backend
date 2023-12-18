@@ -29,6 +29,10 @@ const register = async (req, res) => {
       blood_group
     } = req.body;
 
+    const user = await User.findOne({email:email})
+    if(user.email===email){
+      return res.status(400).json({ error: "Email already exists" });
+    }
     // // Step 2: Validate User Input
     if (!name || !email || !password || !phoneNumber || !whatsappNumber || !date_of_birth || !block || !constituency || !union ) {
       return res.status(400).json({ error: "Please provide all required fields." });
