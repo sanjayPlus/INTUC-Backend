@@ -7,6 +7,7 @@ const { sendMail } = require("./emailController");
 const { createCanvas, loadImage } = require('canvas');
 const qr = require('qrcode');
 const fs = require('fs');
+const Feedback = require("../models/FeedBack");
 
 const jwtSecret = process.env.JWT_SECRET;
 const register = async (req, res) => {
@@ -523,6 +524,25 @@ const createIdCard = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+const AddFeedBack = async(req,res)=>{
+  try {
+const {feedback} = req.body;
+const user=await User.findById(req.user.userId);
+const newFeedback = new Feedback({
+  feedback:feedback,
+  userId:user._id,
+  username:user.name,
+  email:user.email,
+
+});
+const savedFeedback = await newFeedback.save();
+res.status(200).json(savedFeedback);
+  
+  } catch (error) {
+    console.error("Error during ID card generation:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 module.exports = {
   register,
   login,
@@ -539,5 +559,6 @@ module.exports = {
   resetPassword,
   forgotPassword,
   verifyForgotPasswordOTP,
-  createIdCard
+  createIdCard,
+  AddFeedBack
 };

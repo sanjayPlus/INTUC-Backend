@@ -10,6 +10,7 @@ const Slogan = require("../models/Slogan");
 const Ad = require("../models/Ad");
 const Mandalam = require("../models/Mandalam");
 const Event = require("../models/Event");
+const Feedback = require("../models/FeedBack");
 const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -422,6 +423,15 @@ const getEvents = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
+const getFeedback = async (req, res) => {
+    try {
+        const feedback = await Feedback.find({});
+        res.status(200).json(feedback);
+    } catch (error) {
+        console.error("Error getting event:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 module.exports = {
     adminLogin,
     adminRegister,
@@ -447,6 +457,7 @@ module.exports = {
     deleteMandalam,
     addEvent,
     deleteEvent,
-    getEvents
+    getEvents,
+    getFeedback
     
 }
