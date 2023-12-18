@@ -98,7 +98,7 @@ router.get('/protected', adminAuth, adminController.protected);
 router.get('/ad',adminController.getAd);
 router.get('/mandalam',adminController.getMandalam);
 router.get('/events',adminController.getEvents);
-router.get('/feedback',adminAuth,adminController.getFeedBack);
+// router.get('/feedback',adminAuth,adminController.getFeedBack);
 
 router.post('/gallery',galleryImage.single('image'),adminAuth,adminController.addGallery);
 router.post('/ad',ADImage.single('image'),adminAuth,adminController.addAd);
