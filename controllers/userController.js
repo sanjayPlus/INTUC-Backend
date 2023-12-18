@@ -288,24 +288,30 @@ const verifyOTP = async (req, res) => {
     const user = await User.findOne({ email: email });
 
     // Step 4: Verify User and OTP
-    if (!user && otp !== user.otp) {
+    if (!user) {
       return res.status(401).json({ error: 'Invalid credentials.' });
+    }
+
+    if (otp !== user.otp) {
+      return res.status(401).json({ error: 'Invalid OTP.' });
     }
    
     // Step 5: Update verified field
     user.verified = true;
     await user.save();
-    //send jwt token 
-    const token = jwt.sign({ userId: user._id }, jwtSecret, {
-      expiresIn: "1h",
-    });
+
     // Step 6: Send Response
-    res.status(200).json({ message: 'OTP verified successfully' ,token:token});
+    const token = jwt.sign({ userId: user._id }, jwtSecret, {
+      expiresIn: '1h',
+    });
+
+    res.status(200).json({ message: 'OTP verified successfully', token: token });
   } catch (error) {
     console.error('Error during OTP verification:', error.message);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-}
+};
+
 const getGallery = async (req, res) => {
   try {
     const gallery = await Gallery.find();
