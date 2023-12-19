@@ -94,7 +94,7 @@ app.get(
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "/login",
+    failureRedirect: "https://intuc-wahqmt.flutterflow.app/login",
 
     session: false,
   }),
