@@ -224,8 +224,11 @@ const addSlogan = async (req, res) => {
             .status(400)
             .json({ error: "Please provide all required fields." });
         }
+        req.body.image = req.file;
+        let imageObj = req.body.image;
         const newSlogan = await Slogan.create({
         slogan,
+        image: `${process.env.DOMAIN}/sloganImage/${imageObj.filename}`,
         });
         res.status(201).json(newSlogan);
     } catch (error) {
@@ -423,7 +426,7 @@ const getEvents = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
-const getFeedback = async (req, res) => {
+const getFeedBack = async (req, res) => {
     try {
         const feedback = await Feedback.find({});
         res.status(200).json(feedback);
@@ -458,6 +461,6 @@ module.exports = {
     addEvent,
     deleteEvent,
     getEvents,
-    getFeedback
+    getFeedBack
     
 }

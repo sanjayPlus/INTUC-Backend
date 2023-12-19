@@ -6,7 +6,10 @@ const sloganSchema = new mongoose.Schema({
     slogan: {
         type: String,
         required: true,
-        unique: true,
+    },
+    image: {
+        type: String,
+   
     },
 });
 

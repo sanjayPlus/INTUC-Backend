@@ -95,12 +95,15 @@ app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
     failureRedirect: "/login",
+
     session: false,
   }),
   (req, res) => {
     const userProfile = req.user.profile;
     const jwtToken = req.user.token;
-    res.status(200).json({ user: userProfile, token: jwtToken });
+    //redirect with token
+    res.redirect(`https://intuc-wahqmt.flutterflow.app/HomePage?token="+${jwtToken}`);
+    // res.status(200).json({ user: userProfile, token: jwtToken });
   }
 );
 
