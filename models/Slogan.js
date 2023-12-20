@@ -9,7 +9,6 @@ const sloganSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-   
     },
 });
 

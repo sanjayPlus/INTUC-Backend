@@ -30,8 +30,11 @@ const register = async (req, res) => {
     } = req.body;
 
     const user = await User.findOne({email:email})
-    if(user.email===email){
-      return res.status(400).json({ error: "Email already exists" });
+    if(user){
+
+      if(user.email===email){
+        return res.status(400).json({ error: "Email already exists" });
+      }
     }
     // // Step 2: Validate User Input
     if (!name || !email || !password || !phoneNumber || !whatsappNumber || !date_of_birth || !block || !constituency || !union ) {
@@ -536,14 +539,14 @@ const createIdCard = async (req, res) => {
 };
 const AddFeedBack = async(req,res)=>{
   try {
-const {feedback} = req.body;
+const {feedback,rating} = req.body;
 const user=await User.findById(req.user.userId);
 const newFeedback = new Feedback({
   feedback:feedback,
   userId:user._id,
   username:user.name,
   email:user.email,
-
+  rating:rating
 });
 const savedFeedback = await newFeedback.save();
 res.status(200).json(savedFeedback);

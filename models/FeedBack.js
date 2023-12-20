@@ -9,6 +9,9 @@ const feedbackSchema = new mongoose.Schema({
   userId: {
     type: String,
   },
+  rating:{
+    type:Number,
+  },
   username: {
     type: String,
   },
