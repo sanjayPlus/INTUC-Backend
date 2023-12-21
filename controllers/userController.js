@@ -123,7 +123,6 @@ const login = async (req, res) => {
 
     // Step 3: Find User by Email
     const user = await User.findOne({ email });
-
     // Step 4: Verify User and Password
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ error: "Invalid credentials." });
@@ -237,9 +236,10 @@ const update = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    const user = await User.findOneAndDelete(req.user.userId);
-
-    res.status(200).json(user);
+    
+    const user = await User.findOneAndDelete({_id:req.user.userId});
+    console.log(user)
+    res.status(200).json({message:"Account Deleted Successfully"});
   } catch (error) {
     console.error("Error during login:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
