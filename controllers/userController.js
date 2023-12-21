@@ -575,12 +575,12 @@ res.status(200).json(savedFeedback);
   }
 }
 const googleLogin = async(req,res)=>{
-  const { token } = req.body;
-  if (!token) {
-    return res.status(401).json({ error: "ID token not provided." });
-  }
-
+  
   try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(401).json({ error: "ID token not provided." });
+    }
     const decodedToken = await admin.auth().verifyIdToken(token);
 
     const authUser = decodedToken;
@@ -588,10 +588,10 @@ const googleLogin = async(req,res)=>{
       if(!user){
         return res.status(400).json({ error: "User not found" });
       }
-      const token = jwt.sign({ userId: user._id }, jwtSecret, {
+      const tokenNew = jwt.sign({ userId: user._id }, jwtSecret, {
         expiresIn: "1h",
       });
-      res.status(200).json({ token, user: { id: user._id, name: user.name } });
+      res.status(200).json({ token:tokenNew, user: { id: user._id, name: user.name } });
   } catch (error) {
     console.error("Error during ID card generation:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
