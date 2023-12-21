@@ -109,6 +109,27 @@ const eventStorage = multer.diskStorage({
       fileSize: 20 * 1024 * 1024, // 20MB in bytes
     },
   });
+  const carouselStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      // destination is used to specify the path of the directory in which the files have to be stored
+      cb(null, "./public/carouselImage");
+    },
+    filename: function (req, file, cb) {
+      // It is the filename that is given to the saved file.
+      const uniqueSuffix =Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, `${uniqueSuffix}-${file.originalname}`);
+      console.log(`${uniqueSuffix}-${file.originalname}`);
+      // console.log(file);
+    },
+  });
+  
+  // Configure storage engine instead of dest object.
+  const carouselImage = multer({
+    storage: carouselStorage,
+    limits: {
+      fileSize: 20 * 1024 * 1024, // 20MB in bytes
+    },
+  });
 router.post('/login',adminController.adminLogin);
 // router.post('/register',adminController.adminRegister);
 router.get('/user/:id',adminAuth,adminController.getUser);
@@ -120,6 +141,9 @@ router.get('/ad',adminController.getAd);
 router.get('/mandalam',adminController.getMandalam);
 router.get('/events',adminController.getEvents);
 router.get('/feedback',adminAuth,adminController.getFeedBack);
+router.get('/carousel',adminController.getCarousel);
+
+
 
 router.post('/gallery',galleryImage.single('image'),adminAuth,adminController.addGallery);
 router.post('/ad',ADImage.single('image'),adminAuth,adminController.addAd);
@@ -128,6 +152,9 @@ router.post('/slogan',sloganImage.single('image'),adminController.addSlogan);
 router.post('/one-signal',OneImage.single('image'),adminAuth,adminController.sendNotification)
 router.post('/mandalam',adminController.addMandalam);
 router.post('/event',eventImage.single('image'),adminAuth,adminController.addEvent);
+router.post('/carousel',carouselImage.single('image'),adminAuth,adminController.addCarousel);
+
+
 
 router.delete('/user/:id',adminAuth,adminController.deleteUser);
 router.delete('/deleteImage/:id',adminAuth,adminController.deleteImage);
@@ -136,5 +163,6 @@ router.delete("/calendar-event/:id",adminAuth,adminController.deleteCalendarEven
 router.delete("/ad/:id",adminAuth,adminController.deleteAd);
 router.delete('/mandalam/:id',adminController.deleteMandalam);
 router.delete('/event/:id',adminAuth,adminController.deleteEvent);
+router.delete('/carousel/:id',adminAuth,adminController.deleteCarousel);
 
 module.exports = router;
