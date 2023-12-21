@@ -8,10 +8,18 @@ const { createCanvas, loadImage } = require('canvas');
 const qr = require('qrcode');
 const fs = require('fs');
 const Feedback = require("../models/FeedBack");
+const admin = require("firebase-admin");
+const serviceAccount = require("../firebase/firebase");
 
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  // Replace with your Firebase project config
+  databaseURL: process.env.FIREBASE_DATABASE_URL,
+});
 const jwtSecret = process.env.JWT_SECRET;
 const register = async (req, res) => {
   try {
+
     // Step 1: Receive User Data
     const {
       name,
@@ -46,7 +54,6 @@ const register = async (req, res) => {
     if (!emailRegex.test(email)) {
       return res.status(400).json({ error: "Invalid email format." });
     }
-    console.log(req.body)
 
     // Validate password strength (add your own criteria)
     if (password.length < 6) {
@@ -79,7 +86,17 @@ const register = async (req, res) => {
     const token = jwt.sign({ userId: savedUser._id }, jwtSecret, {
       expiresIn: "1h",
     });
-
+    await sendMail(
+      email,
+      'Account Created Successfully',
+      `Congratulations Your Account has been created successfully`,
+      `
+      <div>
+      <h1>Congratulations!</h1>
+      <p>Your account has been successfully created. We're thrilled to have you on board!</p>
+      </div>
+      `
+    )
     // Step 6: Send Response
     res.json({
       token,
@@ -408,6 +425,7 @@ const resetPassword = async (req, res) => {
   }
 }
 const forgotPassword = async (req, res) => {
+
   try {
     // Step 1: Receive User Data
     const { email } = req.body;
@@ -556,6 +574,29 @@ res.status(200).json(savedFeedback);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+const googleLogin = async(req,res)=>{
+  const { token } = req.body;
+  if (!token) {
+    return res.status(401).json({ error: "ID token not provided." });
+  }
+
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(token);
+
+    const authUser = decodedToken;
+      const user = await User.findOne({email:authUser.email});
+      if(!user){
+        return res.status(400).json({ error: "User not found" });
+      }
+      const token = jwt.sign({ userId: user._id }, jwtSecret, {
+        expiresIn: "1h",
+      });
+      res.status(200).json({ token, user: { id: user._id, name: user.name } });
+  } catch (error) {
+    console.error("Error during ID card generation:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 module.exports = {
   register,
   login,
@@ -573,5 +614,6 @@ module.exports = {
   forgotPassword,
   verifyForgotPasswordOTP,
   createIdCard,
-  AddFeedBack
+  AddFeedBack,
+  googleLogin
 };

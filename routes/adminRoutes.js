@@ -130,6 +130,8 @@ const eventStorage = multer.diskStorage({
       fileSize: 20 * 1024 * 1024, // 20MB in bytes
     },
   });
+
+
 router.post('/login',adminController.adminLogin);
 // router.post('/register',adminController.adminRegister);
 router.get('/user/:id',adminAuth,adminController.getUser);
