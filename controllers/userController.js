@@ -596,32 +596,48 @@ const googleLogin = async(req,res)=>{
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-const autoLogin = async(req,res)=>{
+const autoLogin = async (req, res) => {
   try {
-   const userId = req.user.userId
-   const user = await User.findById(userId);
-   
-   const response = await fetch(process.env.STORE_URL+"/api/user/autoLogin",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify({
-      name:user.name,
-      email:user.email,
-      password:password,
-    })
-   })
+    // Retrieve userId from request
+    const userId = req.user.userId;
+
+    // Find user by userId
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Fetch data from the STORE_URL endpoint
+    const response = await fetch(`${process.env.STORE_URL}/api/user/auto-login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: user.name,
+        email: user.email,
+        password: user.password, // Ensure you're not sending the actual password here for security reasons
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch data from STORE_URL');
+    }
+
     const data = await response.json();
-    if(data.error){
+
+    if (data.error) {
       return res.status(400).json({ error: data.error });
     }
-    res.status(200).json({url:data.data.url,token:data.data.token});
+    // Return the URL and token from the response
+    res.status(200).json({ url: data.url, token: data.token });
   } catch (error) {
-    console.error("Error during ID card generation:", error.message);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error during autoLogin:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
-}
+};
+
 module.exports = {
   register,
   login,
