@@ -575,7 +575,6 @@ res.status(200).json(savedFeedback);
   }
 }
 const googleLogin = async(req,res)=>{
-  
   try {
     const { token } = req.body;
     if (!token) {
@@ -592,6 +591,32 @@ const googleLogin = async(req,res)=>{
         expiresIn: "1h",
       });
       res.status(200).json({ token:tokenNew, user: { id: user._id, name: user.name } });
+  } catch (error) {
+    console.error("Error during ID card generation:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+const autoLogin = async(req,res)=>{
+  try {
+   const userId = req.user.userId
+   const user = await User.findById(userId);
+   
+   const response = await fetch(process.env.STORE_URL+"/api/user/autoLogin",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      name:user.name,
+      email:user.email,
+      password:password,
+    })
+   })
+    const data = await response.json();
+    if(data.error){
+      return res.status(400).json({ error: data.error });
+    }
+    res.status(200).json({url:data.data.url,token:data.data.token});
   } catch (error) {
     console.error("Error during ID card generation:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
@@ -615,5 +640,6 @@ module.exports = {
   verifyForgotPasswordOTP,
   createIdCard,
   AddFeedBack,
-  googleLogin
+  googleLogin,
+  autoLogin
 };

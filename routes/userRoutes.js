@@ -33,6 +33,7 @@ const CardStorage = multer.diskStorage({
 router.get('/protected', userAuth, userController.protected);
 router.get('/details', userAuth, userController.details);
 router.get('/gallery', userController.getGallery);
+router.get('/auto-login',userAuth,userController.autoLogin);
 //get liked image list
 router.get('/gallery-likes',userAuth,userController.getGalleryLikes);
 router.post('/register', userController.register);
@@ -47,6 +48,7 @@ router.post('/remove-like-from-image',userAuth,userController.removeLikeFromImag
 router.post('/create-id-card',CardImage.single('profileImage'),userAuth,userController.createIdCard);
 router.post('/feedback',userAuth,userController.AddFeedBack);
 router.post('/google-login',userController.googleLogin);
+
 
 //update
 router.put('/update', userAuth, userController.update);
