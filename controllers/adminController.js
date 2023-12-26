@@ -12,6 +12,7 @@ const Mandalam = require("../models/Mandalam");
 const Event = require("../models/Event");
 const Feedback = require("../models/FeedBack");
 const Carousel = require("../models/Carousel");
+const Poll = require("../models/Poll");
 const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -475,6 +476,76 @@ const getCarousel = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
+
+const addPoll = async (req, res) => {
+    try {
+        const { title, options} = req.body;
+        if (!title || !options ) {
+        return res
+            .status(400)
+            .json({ error: "Please provide all required fields." });
+        }
+        const newPoll = await Poll.create({
+        title,
+        options,
+        });
+        res.status(201).json(newPoll);
+    } catch (error) {
+        console.error("Error adding poll:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+const getPoll = async (req, res) => {
+    try {
+        const polls = await Poll.find({});
+   
+        // Iterate over each poll to calculate the percentage for its options
+        const pollsWithPercentage = polls.map((poll) => {
+            let totalVotes = 0;
+
+            // Calculate the total votes for the poll
+            poll.options.forEach((option) => {
+                totalVotes += option.votes;
+            });
+
+            // Calculate and assign the percentage for each option
+            const optionsWithPercentage = poll.options.map((option) => {
+                const percentage = totalVotes !== 0 ? Math.round((option.votes / totalVotes) * 100) : 0;
+                return {
+                    ...option.toObject(), // Convert Mongoose document to plain JavaScript object
+                    percentage: percentage,
+                };
+            });
+
+            // Update the poll options with the new structure including percentage
+            return {
+                ...poll.toObject(), // Convert Mongoose document to plain JavaScript object
+                options: optionsWithPercentage,
+            };
+        });
+
+        res.status(200).json(pollsWithPercentage);
+    } catch (error) {
+        console.error("Error getting poll:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+
+const deletePoll = async (req, res) => {
+    try {
+        const poll = await Poll.findOneAndDelete({_id:req.params.id});
+        if (!poll) {
+        return res.status(404).json({ error: "Poll not found" });
+        }
+        
+        res.status(200).json({ msg: "Poll removed" });
+    } catch (error) {
+        console.error("Error deleting poll:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 module.exports = {
     adminLogin,
     adminRegister,
@@ -505,5 +576,8 @@ module.exports = {
     addCarousel,
     deleteCarousel,
     getCarousel,
-    
+    addPoll,
+    getPoll,
+    deletePoll
+
 }

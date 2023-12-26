@@ -144,7 +144,7 @@ router.get('/mandalam',adminController.getMandalam);
 router.get('/events',adminController.getEvents);
 router.get('/feedback',adminAuth,adminController.getFeedBack);
 router.get('/carousel',adminController.getCarousel);
-
+router.get('/poll',adminController.getPoll);
 
 
 router.post('/gallery',galleryImage.single('image'),adminAuth,adminController.addGallery);
@@ -155,7 +155,7 @@ router.post('/one-signal',OneImage.single('image'),adminAuth,adminController.sen
 router.post('/mandalam',adminController.addMandalam);
 router.post('/event',eventImage.single('image'),adminAuth,adminController.addEvent);
 router.post('/carousel',carouselImage.single('image'),adminAuth,adminController.addCarousel);
-
+router.post('/poll',adminAuth,adminController.addPoll);
 
 
 router.delete('/user/:id',adminAuth,adminController.deleteUser);
@@ -166,5 +166,6 @@ router.delete("/ad/:id",adminAuth,adminController.deleteAd);
 router.delete('/mandalam/:id',adminController.deleteMandalam);
 router.delete('/event/:id',adminAuth,adminController.deleteEvent);
 router.delete('/carousel/:id',adminAuth,adminController.deleteCarousel);
+router.delete('/poll/:id',adminAuth,adminController.deletePoll);
 
 module.exports = router;

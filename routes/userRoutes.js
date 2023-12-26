@@ -48,7 +48,7 @@ router.post('/remove-like-from-image',userAuth,userController.removeLikeFromImag
 router.post('/create-id-card',CardImage.single('profileImage'),userAuth,userController.createIdCard);
 router.post('/feedback',userAuth,userController.AddFeedBack);
 router.post('/google-login',userController.googleLogin);
-
+router.post('/add-vote',userAuth,userController.addVote);
 
 //update
 router.put('/update', userAuth, userController.update);

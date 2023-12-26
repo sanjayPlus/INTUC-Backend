@@ -10,6 +10,7 @@ const fs = require('fs');
 const Feedback = require("../models/FeedBack");
 const admin = require("firebase-admin");
 const serviceAccount = require("../firebase/firebase");
+const Poll = require("../models/Poll");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -638,6 +639,43 @@ const autoLogin = async (req, res) => {
   }
 };
 
+const addVote = async (req, res) => {
+  try {
+    const { optionId, pollId } = req.body;
+
+    // Fetch the poll by its ID
+    const poll = await Poll.findById(pollId);
+
+    if (!poll) {
+      return res.status(400).json({ error: "Poll not found" });
+    }
+
+    // Find the option by its ID within the poll's options
+    const option = poll.options.find((opt) => opt._id.toString() === optionId); // Convert optionId to string for comparison
+    if (!option) {
+      return res.status(400).json({ error: "Option not found" });
+    }
+
+    // Check if the user has already voted for this option
+    if (poll.users.includes(req.user.userId)) {
+      return res.status(400).json({ error: "Already voted" });
+    }
+
+    // Update the votes count for the selected option and add the user to the list of voters
+    option.votes += 1;
+    option.users.push(req.user.userId);
+    poll.users.push(req.user.userId);
+
+    // Save the updated poll
+    await poll.save();
+
+    res.status(200).json(poll);
+  } catch (error) {
+    console.error("Error during adding vote:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -657,5 +695,6 @@ module.exports = {
   createIdCard,
   AddFeedBack,
   googleLogin,
-  autoLogin
+  autoLogin,
+  addVote
 };
