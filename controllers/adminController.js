@@ -531,7 +531,48 @@ const getPoll = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+const getSinglePoll = async (req, res) => {
+    try {
+        const { id } = req.params; // Corrected the destructuring of params
 
+        // Find the single poll by its ID
+        const poll = await Poll.findById(id);
+
+        if (!poll) {
+            return res.status(404).json({ error: "Poll not found" });
+        }
+
+        let totalVotes = 0;
+
+        // Calculate the total votes for the poll
+        poll.options.forEach((option) => {
+            totalVotes += option.votes;
+        });
+
+        // Calculate and assign the percentage for each option
+        const optionsWithPercentage = poll.options.map((option) => {
+            const percentage = totalVotes !== 0 ? Math.round((option.votes / totalVotes) * 100) : 0;
+            return {
+                ...option.toObject(), // Convert Mongoose document to plain JavaScript object
+                percentage: percentage,
+            };
+        });
+
+        // Update the poll options with the new structure including percentage
+        const pollWithPercentage = {
+            ...poll.toObject(), // Convert Mongoose document to plain JavaScript object
+            options: optionsWithPercentage,
+        };
+
+        res.status(200).json(pollWithPercentage);
+    } catch (error) {
+        console.error("Error getting single poll:", error.message);
+        if (error.kind === 'ObjectId') {
+            return res.status(400).json({ error: "Invalid Poll ID format" });
+        }
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
 
 const deletePoll = async (req, res) => {
     try {
@@ -578,6 +619,7 @@ module.exports = {
     getCarousel,
     addPoll,
     getPoll,
+    getSinglePoll,
     deletePoll
 
 }

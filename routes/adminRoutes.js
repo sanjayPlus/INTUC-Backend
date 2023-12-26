@@ -145,7 +145,7 @@ router.get('/events',adminController.getEvents);
 router.get('/feedback',adminAuth,adminController.getFeedBack);
 router.get('/carousel',adminController.getCarousel);
 router.get('/poll',adminController.getPoll);
-
+router.get('/single-poll/:id',adminController.getSinglePoll);
 
 router.post('/gallery',galleryImage.single('image'),adminAuth,adminController.addGallery);
 router.post('/ad',ADImage.single('image'),adminAuth,adminController.addAd);
