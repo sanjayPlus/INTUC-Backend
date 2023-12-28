@@ -62,6 +62,10 @@ const userSchema = new mongoose.Schema({
     type:Array,
     default:[]
   
+  },
+  profileImage:{
+    type:String,
+    default:""
   }
 });
 

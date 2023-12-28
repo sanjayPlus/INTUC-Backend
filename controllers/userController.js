@@ -675,7 +675,38 @@ const addVote = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
+const emailLogin = async (req, res) => {
+  try {
+    const { email} = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
+    const token = jwt.sign({ userId: user._id }, jwtSecret, {
+      expiresIn: "1h",
+    });
+    res.status(200).json({ token, user: { id: user._id, name: user.name } });
+  } catch (error) {
+    console.error("Error during email login:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+const updateProfileImage = async (req, res) => {
+  
+  try {
+    const {profileImage} = req.file;
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
+    user.profileImage = `${process.env.DOMAIN}/profileImage/${profileImage.filename}`;
+    await user.save();
+    res.status(200).json({ profileImage });
+  } catch (error) {
+    console.error("Error during profile image update:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 module.exports = {
   register,
   login,
@@ -696,5 +727,7 @@ module.exports = {
   AddFeedBack,
   googleLogin,
   autoLogin,
-  addVote
+  addVote,
+  emailLogin,
+  updateProfileImage
 };
