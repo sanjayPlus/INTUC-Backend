@@ -677,20 +677,38 @@ const addVote = async (req, res) => {
 };
 const emailLogin = async (req, res) => {
   try {
-    const { email} = req.body;
-    const user = await User.findOne({ email });
+    const { email } = req.body;
+    let user = await User.findOne({ email });
+    
     if (!user) {
-      return res.status(400).json({ error: "User not found" });
+      user = await User.create({
+        name: "",
+        email,
+        password: "",
+        phoneNumber: "",
+        whatsappNumber: "",
+        age: "",
+        date_of_birth: "",
+        block: "",
+        constituency: "",
+        union: "", // Change "Union" to "union" if needed
+        addaar: "",
+        pan_card: "",
+        blood_group: "",
+      });
     }
+    
     const token = jwt.sign({ userId: user._id }, jwtSecret, {
       expiresIn: "1h",
     });
+
     res.status(200).json({ token, user: { id: user._id, name: user.name } });
   } catch (error) {
     console.error("Error during email login:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
-}
+};
+
 const updateProfileImage = async (req, res) => {
   
   try {

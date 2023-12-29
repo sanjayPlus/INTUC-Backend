@@ -54,6 +54,7 @@ router.get('/protected', userAuth, userController.protected);
 router.get('/details', userAuth, userController.details);
 router.get('/gallery', userController.getGallery);
 router.get('/auto-login',userAuth,userController.autoLogin);
+
 //get liked image list
 router.get('/gallery-likes',userAuth,userController.getGalleryLikes);
 router.post('/register', userController.register);
@@ -77,5 +78,6 @@ router.put('/update', userAuth, userController.update);
 //delete
 
 router.delete('/delete', userAuth, userController.deleteUser);
+
 
 module.exports = router;
