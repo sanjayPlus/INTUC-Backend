@@ -684,7 +684,7 @@ const emailLogin = async (req, res) => {
       user = await User.create({
         name: "",
         email,
-        password: "",
+        password: Date.now().toString(),
         phoneNumber: "",
         whatsappNumber: "",
         age: "",
