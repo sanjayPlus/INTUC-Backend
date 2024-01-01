@@ -35,7 +35,7 @@ router.get('/checkout/:amount/:token',async (req, res) => {
         amount: req.params.amount * 100,
         redirectUrl:
           process.env.PHONEPAY_REDIRECT_URL +
-          "/status/" +
+          "/api/payment/status/" +
           merchantTransactionId +
           "/" +
           process.env.MERCHANT_ID +
