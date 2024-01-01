@@ -66,7 +66,14 @@ const userSchema = new mongoose.Schema({
   profileImage:{
     type:String,
     default:""
-  }
+  },
+  payments:[{
+    paymentId:String,
+    amount:Number,
+    date:String,
+    merchantId:String,
+    merchantTransactionId:String,
+  }]
 });
 
 const User = mongoose.model('User', userSchema);

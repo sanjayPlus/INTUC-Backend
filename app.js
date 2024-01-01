@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 const app = express();
 const path = require("path")
 const passport = require("passport");
@@ -13,7 +14,7 @@ const jwt = require("jsonwebtoken");
 const session = require("express-session");
 const User = require('./models/User');
 const PORT = process.env.PORT || 9000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/your-database-name';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/intuc';
 // Connect to MongoDB
 app.use(
   session({
@@ -44,6 +45,7 @@ app.use(passport.session());
 
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/payment', paymentRoutes);
 
 app.get("/",(req,res)=>{
   res.send("hello");
