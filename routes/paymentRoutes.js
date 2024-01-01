@@ -110,6 +110,10 @@ router.get('/status/:transactionId/:merchantId/:amount/:token', async (req, res)
           if (response.data.success === true) {
               const {name, email, phoneNumber} = user
                 const  paymentAmount = response.data.data.amount/100;
+                const paayment  = await Payment.findOne({merchantTransactionId})
+                if(paayment){
+                  return res.status(404).json({ message: 'Payment Already done' });
+                }
                 const payments = await  Payment.create({
                     userId,
                     merchantId,
