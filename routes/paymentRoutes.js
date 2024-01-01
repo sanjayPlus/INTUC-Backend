@@ -19,6 +19,13 @@ router.get('/checkout/:amount/:token',async (req, res) => {
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
+      if(!req.params.amount){
+        return res.status(404).json({ message: 'Amount not found' });
+      }
+      if(!user.name || !user.phoneNumber){
+        return res.status(404).json({ message: 'Name or phone number not found' });
+      }
+      
       const merchantTransactionId = crypto.randomBytes(16).toString('hex');
       const data = {
         merchantId: process.env.MERCHANT_ID,
@@ -28,7 +35,7 @@ router.get('/checkout/:amount/:token',async (req, res) => {
         amount: req.params.amount * 100,
         redirectUrl:
           process.env.PHONEPAY_REDIRECT_URL +
-          "/api/payment/status/" +
+          "/status/" +
           merchantTransactionId +
           "/" +
           process.env.MERCHANT_ID +
@@ -73,7 +80,7 @@ router.get('/checkout/:amount/:token',async (req, res) => {
     }
   });
 
-router.post('/status/:transactionId/:merchantId/:amount/:token', async (req, res) => {
+router.get('/status/:transactionId/:merchantId/:amount/:token', async (req, res) => {
     const merchantTransactionId = req.params.transactionId
       const merchantId = req.params.merchantId
       const amount = req.params.amount
