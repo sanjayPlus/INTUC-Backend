@@ -66,12 +66,16 @@ router.post('/forgotPassword',userController.forgotPassword);
 router.post('/verifyForgotOTP',userController.verifyForgotPasswordOTP);
 router.post('/add-like-to-image',userAuth,userController.addLikeToImage);
 router.post('/remove-like-from-image',userAuth,userController.removeLikeFromImage);
+
+
 router.post('/create-id-card',CardImage.single('profileImage'),userAuth,userController.createIdCard);
 router.post('/feedback',userAuth,userController.AddFeedBack);
 router.post('/google-login',userController.googleLogin);
 router.post('/add-vote',userAuth,userController.addVote);
 router.post('/email-login',userController.emailLogin);
 router.post('/profile-image',ProfileImage.single('profileImage'),userAuth,userController.updateProfileImage);
+
+
 //update
 router.put('/update', userAuth, userController.update);
 
