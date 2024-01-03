@@ -116,9 +116,9 @@ router.get(
     axios
       .request(options)
       .then(async (response) => {
-
+        
         if (response.data.success === true) {
-          // if (response.data.data.state === "SUCCESS") {
+          if (response.data.data.state === "COMPLETED") {
             const { name, email, phoneNumber } = user;
             const paymentAmount = response.data.data.amount / 100;
 
@@ -178,10 +178,10 @@ router.get(
             const url = `${process.env.PHONEPAY_REDIRECT_URL}/api/payment/failure`;
             return res.redirect(url);
           }
-        // } else {
-        //   const url = `${process.env.PHONEPAY_REDIRECT_URL}/api/payment/failure`;
-        //   return res.redirect(url);
-        // }
+        } else {
+          const url = `${process.env.PHONEPAY_REDIRECT_URL}/api/payment/failure`;
+          return res.redirect(url);
+        }
       })
       .catch((error) => {
         console.error(error);
