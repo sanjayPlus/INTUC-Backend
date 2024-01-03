@@ -125,7 +125,7 @@ const login = async (req, res) => {
     const user = await User.findOne({ email });
     // Step 4: Verify User and Password
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ error: "Invalid credentials." });
+      return res.status(400).json({ error: "Invalid credentials." });
     }
 
     // Step 5: Generate JWT
@@ -145,7 +145,7 @@ const protected = async (req, res) => {
     if (req.user) {
       res.status(200).json({ message: "You are authorized" });
     } else {
-      res.status(401).json({ message: "You are not authorized" });
+      res.status(400).json({ message: "You are not authorized" });
     }
   } catch (error) {
     console.error("Error during login:", error.message);
@@ -313,11 +313,11 @@ const verifyOTP = async (req, res) => {
 
     // Step 4: Verify User and OTP
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials.' });
+      return res.status(400).json({ error: 'Invalid credentials.' });
     }
 
     if (otp !== user.otp) {
-      return res.status(401).json({ error: 'Invalid OTP.' });
+      return res.status(400).json({ error: 'Invalid OTP.' });
     }
    
     // Step 5: Update verified field
@@ -407,7 +407,7 @@ const resetPassword = async (req, res) => {
 
     // Step 4: Verify User and Password
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials.' });
+      return res.status(400).json({ error: 'Invalid credentials.' });
     }
 
     // Step 5: Hash Password
@@ -488,9 +488,14 @@ const verifyForgotPasswordOTP = async (req, res) => {
     const user = await User.findOne({ email: email });
 
     // Step 4: Verify User and OTP
-    if (!user && otp !== user.forgot_otp) {
-      return res.status(401).json({ error: 'Invalid credentials.' });
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid credentials.' });
     }
+
+    if (otp !==  user.forgot_otp) {
+      return res.status(400).json({ error: 'Invalid OTP.' });
+    }
+
        // Step 5: Generate JWT
        const token = jwt.sign({ userId: user._id }, jwtSecret, {
         expiresIn: "1h",
@@ -578,7 +583,7 @@ const googleLogin = async(req,res)=>{
   try {
     const { token } = req.body;
     if (!token) {
-      return res.status(401).json({ error: "ID token not provided." });
+      return res.status(400).json({ error: "ID token not provided." });
     }
     const decodedToken = await admin.auth().verifyIdToken(token);
 
