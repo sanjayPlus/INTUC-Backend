@@ -108,8 +108,12 @@ router.get('/status/:transactionId/:merchantId/:amount/:token', async (req, res)
       // CHECK PAYMENT TATUS
       axios.request(options).then(async(response) => {
           if (response.data.success === true) {
+            if(response.data.data.state === "SUCCESS"){
               const {name, email, phoneNumber} = user
                 const  paymentAmount = response.data.data.amount/100;
+              
+
+             
                 const payment  = await Payment.findOne({merchantTransactionId})
                 if(payment){
                   return res.status(404).json({ message: 'Payment Already done' });
@@ -156,6 +160,7 @@ router.get('/status/:transactionId/:merchantId/:amount/:token', async (req, res)
               const url = `${process.env.PHONEPAY_REDIRECT_URL}/api/payment/failure`
               return res.redirect(url)
           }
+        }
       })
       .catch((error) => {
           console.error(error);
