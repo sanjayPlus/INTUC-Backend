@@ -166,7 +166,7 @@ const update = async (req, res) => {
   try {
     const {
       name,
-      email,
+      // email,
       password,
       phoneNumber,
       whatsappNumber,
@@ -187,9 +187,9 @@ const update = async (req, res) => {
     if (name) {
       user.name = name;
     }
-    if (email) {
-      user.email = email;
-    }
+    // if (email) {
+    //   user.email = email;
+    // }
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       user.password = hashedPassword;
