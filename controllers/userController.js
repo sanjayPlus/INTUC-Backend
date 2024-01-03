@@ -354,7 +354,7 @@ const addLikeToImage = async (req, res) => {
     }
     user.gallery_likes.push(imageId);
     await user.save();
-    res.status(200).json(user);
+    res.status(200).json(user.gallery_likes);
   } catch (error) {
     console.error("Error during login:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
@@ -371,7 +371,7 @@ const removeLikeFromImage = async (req, res) => {
       (image) => image !== imageId
     );
     await user.save();
-    res.status(200).json(user);
+    res.status(200).json(user.gallery_likes);
   } catch (error) {
     console.error("Error during login:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
