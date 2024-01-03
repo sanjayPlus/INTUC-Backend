@@ -28,7 +28,6 @@ const register = async (req, res) => {
       password,
       phoneNumber,
       whatsappNumber,
-      age,
       date_of_birth,
       block,
       constituency,
@@ -155,13 +154,14 @@ const protected = async (req, res) => {
 };
 const details = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId);
+    const user = await User.findById(req.user.userId).select('-password'); // This will exclude the password field from the result
     res.status(200).json(user);
   } catch (error) {
-    console.error("Error during login:", error.message);
+    console.error("Error during fetching user details:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 const update = async (req, res) => {
   try {
     const {
@@ -170,7 +170,6 @@ const update = async (req, res) => {
       password,
       phoneNumber,
       whatsappNumber,
-      age,
       date_of_birth,
       block,
       constituency,
@@ -181,7 +180,9 @@ const update = async (req, res) => {
     } = req.body;
 
     const user = await User.findById(req.user.userId);
-
+    if(!user){
+      return res.status(400).json({ error: "User not found" });
+    }
     // If fields exist, update them
     if (name) {
       user.name = name;
@@ -201,9 +202,7 @@ const update = async (req, res) => {
     if (whatsappNumber) {
       user.whatsappNumber = whatsappNumber;
     }
-    if (age) {
-      user.age = age;
-    }
+  
     if (date_of_birth) {
       user.date_of_birth = date_of_birth;
     }
