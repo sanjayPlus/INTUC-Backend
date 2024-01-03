@@ -189,6 +189,111 @@ router.get(
   }
 );
 
+router.post(
+  "/status/:transactionId/:merchantId/:amount/:token",
+  async (req, res) => {
+    const merchantTransactionId = req.params.transactionId;
+    const merchantId = req.params.merchantId;
+    const amount = req.params.amount;
+    const token = req.params.token;
+    const { userId } = jwt.verify(token, jwtSecret);
+    const user = await User.findById(userId);
+
+    const keyIndex = 1;
+    const string =
+      `/pg/v1/status/${merchantId}/${merchantTransactionId}` +
+      process.env.PHONEPAY_API_KEY;
+    const sha256 = crypto.createHash("sha256").update(string).digest("hex");
+    const checksum = sha256 + "###" + keyIndex;
+
+    const options = {
+      method: "GET",
+      url: `${process.env.PHONEPAY_API_URL}/pg/v1/status/${merchantId}/${merchantTransactionId}`,
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+        "X-VERIFY": checksum,
+        "X-MERCHANT-ID": `${merchantId}`,
+      },
+    };
+
+    // CHECK PAYMENT TATUS
+    axios
+      .request(options)
+      .then(async (response) => {
+        
+        if (response.data.success === true) {
+          if (response.data.data.state === "COMPLETED") {
+            const { name, email, phoneNumber } = user;
+            const paymentAmount = response.data.data.amount / 100;
+
+            const payment = await Payment.findOne({ merchantTransactionId });
+            if (payment) {
+              return res.status(404).json({ message: "Payment Already done" });
+            }
+            const payments = await Payment.create({
+              userId,
+              merchantId,
+              merchantTransactionId,
+              amount: paymentAmount,
+              date: new Date().toLocaleDateString(),
+              body: response.data.data,
+              name,
+              email,
+              phone: phoneNumber,
+            });
+            user.payments.push({
+              paymentId: payments._id,
+              merchantId,
+              merchantTransactionId,
+              amount: paymentAmount,
+              date: new Date().toLocaleDateString(),
+            });
+            await user.save();
+
+            const htmlContent = sendMail(
+              email,
+              "Payment Successful",
+              "Payment Successful",
+              `<div>
+              <h1 style="text-align:center">Payment Successful</h1>
+              <br>
+              <p>Dear ${name},</p>
+              <br>
+              <p>Thankyou for your Contribution to INTUC Thrissur</p>
+              <p>Your Payment Details</p>
+              <br>
+              <p>Your transaction Id is ${merchantTransactionId}</p>
+              <p>Email ${name}</p>
+              <p>Amount ${amount}</p>
+              <p>Email ${email}</p>
+              <p>Phone ${phoneNumber}</p>
+                  <br>
+              <p>For App Support Contact app@intucthrisssur.com </p>
+              <br>
+              <p>Sincerely,</p>
+              <p>SUNDARAN KUNNATHULLY</p>
+              <p>President,INTUC THRISSUR</p>
+              </div>`
+            );
+
+            const url = `${process.env.PHONEPAY_REDIRECT_URL}/api/payment/success`;
+            return res.redirect(url);
+          } else {
+            const url = `${process.env.PHONEPAY_REDIRECT_URL}/api/payment/failure`;
+            return res.redirect(url);
+          }
+        } else {
+          const url = `${process.env.PHONEPAY_REDIRECT_URL}/api/payment/failure`;
+          return res.redirect(url);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+);
+
 router.get("/success", (req, res) => {
   res.redirect("https://intucthrissur.com");
 });
