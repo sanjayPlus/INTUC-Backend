@@ -202,10 +202,10 @@ const update = async (req, res) => {
     if (whatsappNumber) {
       user.whatsappNumber = whatsappNumber;
     }
-  
     if (date_of_birth) {
-      user.date_of_birth = date_of_birth;
+      user.date_of_birth = new Date(date_of_birth);
     }
+    
     if (block) {
       user.block = block;
     }
