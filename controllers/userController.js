@@ -520,7 +520,9 @@ const createIdCard = async (req, res) => {
   try {
     // Assuming you have a User model defined using Mongoose
     const user = await User.findById(req.user.userId);
-
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
     // Get the profile image from the request
     const profileImage = req.file;
 
@@ -572,6 +574,9 @@ const AddFeedBack = async (req, res) => {
   try {
     const { feedback, rating } = req.body;
     const user = await User.findById(req.user.userId);
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
     //rating must be between 1 to 5
     if (rating < 1 || rating > 5) {
       return res.status(400).json({ error: "Rating must be between 1 to 5" });
