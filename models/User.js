@@ -21,9 +21,6 @@ const userSchema = new mongoose.Schema({
   whatsappNumber:{
     type: String,
   },
-  age:{
-    type: String,
-  },
   date_of_birth:{
     type:Date,
   },
