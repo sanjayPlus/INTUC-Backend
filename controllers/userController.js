@@ -63,7 +63,7 @@ const register = async (req, res) => {
     // Step 3: Hash Password
     const hashedPassword = await bcrypt.hash(password, 10);
     //find age from date o birth 
-    const newAge = new Date().getFullYear() - new Date(date_of_birth).getFullYear();
+
     // Step 4: Create User
     const newUser = new User({
       name,
@@ -71,7 +71,7 @@ const register = async (req, res) => {
       password: hashedPassword,
       phoneNumber,
       whatsappNumber: whatsappNumber || phoneNumber,
-      age: newAge,
+
       date_of_birth,
       block,
       constituency,
