@@ -24,9 +24,10 @@ const userSchema = new mongoose.Schema({
   date_of_birth:{
     type:Date,
   },
-  block:String,
+  district:String,
   constituency:String,
-  union:String,
+  assembly:String,
+  panchayath:String,
   addaar:{
     type:String,
     default:""

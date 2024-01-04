@@ -146,6 +146,9 @@ router.get('/feedback',adminAuth,adminController.getFeedBack);
 router.get('/carousel',adminController.getCarousel);
 router.get('/poll',adminController.getPoll);
 router.get('/single-poll/:id',adminController.getSinglePoll);
+router.get('/district',adminController.getDistrict);
+router.get('/districtV2',adminController.getDistrictV2);
+router.get('/districtV3',adminController.getDistrictV3);
 
 
 router.post('/gallery',galleryImage.single('image'),adminAuth,adminController.addGallery);
@@ -157,6 +160,10 @@ router.post('/mandalam',adminController.addMandalam);
 router.post('/event',eventImage.single('image'),adminAuth,adminController.addEvent);
 router.post('/carousel',carouselImage.single('image'),adminAuth,adminController.addCarousel);
 router.post('/poll',adminAuth,adminController.addPoll);
+router.post('/add-district',adminAuth,adminController.addDistrict);
+router.post('/add-constituency',adminAuth,adminController.addConstituency);
+router.post('/add-assembly',adminAuth,adminController.addAssembly);
+router.post('/add-panchayath',adminAuth,adminController.addPanchayath);
 
 
 router.delete('/user/:id',adminAuth,adminController.deleteUser);

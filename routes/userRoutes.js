@@ -74,7 +74,7 @@ router.post('/google-login',userController.googleLogin);
 router.post('/add-vote',userAuth,userController.addVote);
 router.post('/email-login',userController.emailLogin);
 router.post('/profile-image',ProfileImage.single('profileImage'),userAuth,userController.updateProfileImage);
-
+router.post('/apple-login',userController.appleLogin);  
 
 //update
 router.put('/update', userAuth, userController.update);

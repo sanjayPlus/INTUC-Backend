@@ -13,6 +13,7 @@ const Event = require("../models/Event");
 const Feedback = require("../models/FeedBack");
 const Carousel = require("../models/Carousel");
 const Poll = require("../models/Poll");
+const District = require("../models/District");
 const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -587,6 +588,316 @@ const deletePoll = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
+const addDistrict = async (req, res) => {
+    try {
+        const { name } = req.body;
+        if (!name ) {
+        return res
+            .status(400)
+            .json({ error: "Please provide all required fields." });
+        }
+        const newDistrict = await District.create({
+        name,
+        });
+        res.status(201).json(newDistrict);
+    } catch (error) {
+        console.error("Error adding district:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+const addConstituency = async (req, res) => {
+    try {
+        const { name, district } = req.body;
+        
+        // Check if name is provided
+        if (!name) {
+            return res.status(400).json({ error: "Please provide a name for the constituency." });
+        }
+        
+        // Find the district with the provided name
+        const existingDistrict = await District.findOne({ name: district });
+        
+        // If district not found
+        if (!existingDistrict) {
+            return res.status(404).json({ error: "District not found" });
+        }
+
+        // Create a new Constituency instance
+        const newConstituency = {
+            name: name,
+            assemblies: [] // You can initialize with empty assemblies if required
+        };
+
+        // Push the new constituency to the district's constituencies array
+        existingDistrict.constituencies.push(newConstituency);
+        
+        // Save the updated district
+        await existingDistrict.save();
+
+        res.status(201).json({ message: "Constituency added successfully", district: existingDistrict });
+    } catch (error) {
+        console.error("Error adding constituency:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+const addAssembly = async (req, res) => {
+    try {
+        const { name, district, constituency } = req.body;
+
+        // Check if name, district, and constituency are provided
+        if (!name || !district || !constituency) {
+            return res.status(400).json({ error: "Please provide all required fields." });
+        }
+
+        // Find the district with the provided name
+        const existingDistrict = await District.findOne({ name: district });
+
+        // If district not found
+        if (!existingDistrict) {
+            return res.status(404).json({ error: "District not found" });
+        }
+
+        // Find the constituency within the found district
+        const existingConstituency = existingDistrict.constituencies.find(c => c.name === constituency);
+
+        // If constituency not found
+        if (!existingConstituency) {
+            return res.status(404).json({ error: "Constituency not found within the district" });
+        }
+
+        // Create a new Assembly instance
+        const newAssembly = {
+            name: name,
+            panchayaths: []  // You can initialize with empty panchayaths if required
+        };
+
+        // Push the new assembly to the constituency's assemblies array
+        existingConstituency.assemblies.push(newAssembly);
+
+        // Save the updated district
+        await existingDistrict.save();
+
+        res.status(201).json({ message: "Assembly added successfully", district: existingDistrict });
+    } catch (error) {
+        console.error("Error adding assembly:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+const addPanchayath = async (req, res) => {
+    try {
+        const { name, district, constituency, assembly } = req.body;
+
+        // Check if name, district, constituency, and assembly are provided
+        if (!name || !district || !constituency || !assembly) {
+            return res.status(400).json({ error: "Please provide all required fields." });
+        }
+
+        // Find the district with the provided name
+        const existingDistrict = await District.findOne({ name: district });
+
+        // If district not found
+        if (!existingDistrict) {
+            return res.status(404).json({ error: "District not found" });
+        }
+
+        // Find the constituency within the found district
+        const existingConstituency = existingDistrict.constituencies.find(c => c.name === constituency);
+
+        // If constituency not found
+        if (!existingConstituency) {
+            return res.status(404).json({ error: "Constituency not found within the district" });
+        }
+
+        // Find the assembly within the found constituency
+        const existingAssembly = existingConstituency.assemblies.find(a => a.name === assembly);
+
+        // If assembly not found
+        if (!existingAssembly) {
+            return res.status(404).json({ error: "Assembly not found within the constituency" });
+        }
+
+        // Create a new Panchayath instance
+        const newPanchayath = {
+            name: name
+        };
+
+        // Push the new panchayath to the assembly's panchayaths array
+        existingAssembly.panchayaths.push(newPanchayath);
+
+        // Save the updated district
+        await existingDistrict.save();
+
+        res.status(201).json({ message: "Panchayath added successfully", district: existingDistrict });
+    } catch (error) {
+        console.error("Error adding panchayath:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+const getDistrict = async (req, res) => {
+    try {
+        const { district, constituency, assembly, panchayath } = req.query;
+
+        if (district) {
+            const result = await District.findOne({ name: district });
+            if (result) {
+                return res.status(200).json(result);
+            } else {
+                return res.status(404).json({ error: "District not found" });
+            }
+        } else if (constituency) {
+            const result = await District.findOne({ "constituencies.name": constituency });
+            if (result) {
+                const foundConstituency = result.constituencies.find(c => c.name === constituency);
+                return res.status(200).json(foundConstituency);
+            } else {
+                return res.status(404).json({ error: "Constituency not found" });
+            }
+        } else if (assembly) {
+            let foundAssembly = null;
+            const result = await District.findOne({});
+            if (result) {
+                result.constituencies.forEach(con => {
+                    con.assemblies.forEach(asm => {
+                        if (asm.name === assembly) {
+                            foundAssembly = asm;
+                        }
+                    });
+                });
+            }
+            if (foundAssembly) {
+                return res.status(200).json(foundAssembly);
+            } else {
+                return res.status(404).json({ error: "Assembly not found" });
+            }
+        } else if (panchayath) {
+            let foundPanchayath = null;
+            const result = await District.findOne({});
+            if (result) {
+                result.constituencies.forEach(con => {
+                    con.assemblies.forEach(asm => {
+                        asm.panchayaths.forEach(pan => {
+                            if (pan.name === panchayath) {
+                                foundPanchayath = pan;
+                            }
+                        });
+                    });
+                });
+            }
+            if (foundPanchayath) {
+                return res.status(200).json(foundPanchayath);
+            } else {
+                return res.status(404).json({ error: "Panchayath not found" });
+            }
+        } else {
+            return res.status(400).json({ error: "Please provide a valid parameter" });
+        }
+
+    } catch (error) {
+        console.error("Error fetching details:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+const getDistrictV2 = async (req,res)=>{
+    try {
+        const { district, constituency, assembly, panchayath } = req.query;
+
+        // Find district based on the provided name
+        let query = district ? { name: district } : {};
+
+        const result = await District.findOne(query);
+
+        if (!result) {
+            return res.status(404).json({ error: "Data not found" });
+        }
+
+        // If constituency is provided, narrow down the search
+        if (constituency) {
+            result.constituencies = result.constituencies.filter(con => con.name === constituency);
+        }
+
+        // If assembly is provided, narrow down the search
+        if (assembly) {
+            result.constituencies.forEach(con => {
+                con.assemblies = con.assemblies.filter(asm => asm.name === assembly);
+            });
+        }
+
+        // If panchayath is provided, narrow down the search
+        if (panchayath) {
+            result.constituencies.forEach(con => {
+                con.assemblies.forEach(asm => {
+                    asm.panchayaths = asm.panchayaths.filter(pan => pan.name === panchayath);
+                });
+            });
+        }
+
+        return res.status(200).json(result);
+
+    } catch (error) {
+        console.error("Error fetching details:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+const getDistrictV3 = async (req,res)=>{
+    try {
+        const { district, constituency, assembly } = req.query;
+        if (!district && !constituency && !assembly) {
+            const allDistricts = await District.find({}, 'name'); // Fetch only the 'name' field
+            return res.status(200).json(allDistricts.map(d => d.name));
+        }
+        // If only district is provided, return all constituencies
+        if (district && !constituency && !assembly) {
+            const result = await District.findOne({ name: district });
+            if (result) {
+                return res.status(200).json(result.constituencies.map(con => con.name));
+            } else {
+                return res.status(404).json({ error: "District not found" });
+            }
+        }
+
+        // If district and constituency are provided, return all assemblies
+        if (district && constituency && !assembly) {
+            const result = await District.findOne({ name: district });
+            if (result) {
+                const selectedConstituency = result.constituencies.find(con => con.name === constituency);
+                if (selectedConstituency) {
+                    return res.status(200).json(selectedConstituency.assemblies.map(asm => asm.name));
+                } else {
+                    return res.status(404).json({ error: "Constituency not found within the district" });
+                }
+            } else {
+                return res.status(404).json({ error: "District not found" });
+            }
+        }
+
+        // If district, constituency, and assembly are provided, return all panchayaths
+        if (district && constituency && assembly) {
+            const result = await District.findOne({ name: district });
+            if (result) {
+                const selectedConstituency = result.constituencies.find(con => con.name === constituency);
+                if (selectedConstituency) {
+                    const selectedAssembly = selectedConstituency.assemblies.find(asm => asm.name === assembly);
+                    if (selectedAssembly) {
+                        return res.status(200).json(selectedAssembly.panchayaths.map(pan => pan.name));
+                    } else {
+                        return res.status(404).json({ error: "Assembly not found within the constituency" });
+                    }
+                } else {
+                    return res.status(404).json({ error: "Constituency not found within the district" });
+                }
+            } else {
+                return res.status(404).json({ error: "District not found" });
+            }
+        }
+
+        return res.status(400).json({ error: "Invalid parameters provided" });
+
+    } catch (error) {
+        console.error("Error fetching details:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 module.exports = {
     adminLogin,
     adminRegister,
@@ -620,6 +931,12 @@ module.exports = {
     addPoll,
     getPoll,
     getSinglePoll,
-    deletePoll
-
+    deletePoll,
+    addDistrict,
+    addConstituency,
+    addAssembly,
+    addPanchayath,
+    getDistrict,
+    getDistrictV2,
+    getDistrictV3
 }

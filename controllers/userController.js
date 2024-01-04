@@ -26,14 +26,11 @@ const register = async (req, res) => {
       email,
       password,
       phoneNumber,
-      whatsappNumber,
       date_of_birth,
-      block,
+      district,
       constituency,
-      union,
-      addaar,
-      pan_card,
-      blood_group,
+      assembly,
+      panchayath,
     } = req.body;
 
     const user = await User.findOne({ email: email });
@@ -48,11 +45,11 @@ const register = async (req, res) => {
       !email ||
       !password ||
       !phoneNumber ||
-      !whatsappNumber ||
       !date_of_birth ||
-      !block ||
+      !district ||
       !constituency ||
-      !union
+      !assembly ||
+      !panchayath
     ) {
       return res
         .status(400)
@@ -83,14 +80,11 @@ const register = async (req, res) => {
       password: hashedPassword,
       phoneNumber,
       whatsappNumber: whatsappNumber || phoneNumber,
-
       date_of_birth,
-      block,
+      district,
       constituency,
-      union,
-      addaar,
-      pan_card,
-      blood_group,
+      assembly,
+      panchayath,
     });
     const savedUser = await newUser.save();
 
@@ -182,12 +176,13 @@ const update = async (req, res) => {
       phoneNumber,
       whatsappNumber,
       date_of_birth,
-      block,
-      constituency,
-      union, // Change "Union" to "union" if needed
       addaar,
       pan_card,
       blood_group,
+      district,
+      constituency,
+      assembly,
+      panchayath
     } = req.body;
 
     const user = await User.findById(req.user.userId);
@@ -217,14 +212,17 @@ const update = async (req, res) => {
       user.date_of_birth = new Date(date_of_birth);
     }
 
-    if (block) {
-      user.block = block;
+    if (district) {
+      user.district = district;
     }
     if (constituency) {
       user.constituency = constituency;
     }
-    if (union) {
-      user.union = union;
+    if (assembly) {
+      user.assembly = assembly;
+    }
+    if (panchayath) {
+      user.panchayath = panchayath;
     }
     if (addaar) {
       user.addaar = addaar;
@@ -750,6 +748,30 @@ const updateProfileImage = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+const appleLogin = async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(400).json({ error: "ID token not provided." });
+    }
+    const decodedToken = await admin.auth().verifyIdToken(token);
+
+    const authUser = decodedToken;
+    const user = await User.findOne({ email: authUser.email });
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
+    const tokenNew = jwt.sign({ userId: user._id }, jwtSecret, {
+      expiresIn: "1h",
+    });
+    res
+      .status(200)
+      .json({ token: tokenNew, user: { id: user._id, name: user.name } });
+  } catch (error) {
+    console.error("Error during ID card generation:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 module.exports = {
   register,
   login,
@@ -773,4 +795,5 @@ module.exports = {
   addVote,
   emailLogin,
   updateProfileImage,
+  appleLogin,
 };
