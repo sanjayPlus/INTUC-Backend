@@ -898,6 +898,168 @@ const getDistrictV3 = async (req,res)=>{
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
+const deleteDistrict = async (req, res) => {
+    try {
+        const { name } = req.body;
+
+        // Check if name is provided
+        if (!name) {
+            return res.status(400).json({ error: "Please provide a name for the district." });
+        }
+
+        // Find and delete the district
+        const deletedDistrict = await District.findOneAndDelete({ name });
+
+        // If district not found
+        if (!deletedDistrict) {
+            return res.status(404).json({ error: "District not found" });
+        }
+
+        res.status(200).json({ message: "District deleted successfully", deletedDistrict });
+    } catch (error) {
+        console.error("Error deleting district:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+const deleteConstituency = async (req, res) => {
+    try {
+        const { district, constituency } = req.body;
+
+        // Check if district and constituency are provided
+        if (!district || !constituency) {
+            return res.status(400).json({ error: "Please provide all required fields." });
+        }
+
+        // Find the district with the provided name
+        const existingDistrict = await District.findOne({ name: district });
+
+        // If district not found
+        if (!existingDistrict) {
+            return res.status(404).json({ error: "District not found" });
+        }
+
+        // Find the index of the constituency within the found district
+        const constituencyIndex = existingDistrict.constituencies.findIndex(c => c.name === constituency);
+
+        // If constituency not found
+        if (constituencyIndex === -1) {
+            return res.status(404).json({ error: "Constituency not found within the district" });
+        }
+
+        // Remove the constituency from the district's constituencies array
+        existingDistrict.constituencies.splice(constituencyIndex, 1);
+
+        // Save the updated district
+        await existingDistrict.save();
+
+        res.status(200).json({ message: "Constituency deleted successfully", district: existingDistrict });
+    } catch (error) {
+        console.error("Error deleting constituency:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+const deleteAssembly = async (req, res) => {
+    try {
+        const { district, constituency, assembly } = req.body;
+
+        // Check if district, constituency, and assembly are provided
+        if (!district || !constituency || !assembly) {
+            return res.status(400).json({ error: "Please provide all required fields." });
+        }
+
+        // Find the district with the provided name
+        const existingDistrict = await District.findOne({ name: district });
+
+        // If district not found
+        if (!existingDistrict) {
+            return res.status(404).json({ error: "District not found" });
+        }
+
+        // Find the constituency within the found district
+        const existingConstituency = existingDistrict.constituencies.find(c => c.name === constituency);
+
+        // If constituency not found
+        if (!existingConstituency) {
+            return res.status(404).json({ error: "Constituency not found within the district" });
+        }
+
+        // Find the index of the assembly within the found constituency
+        const assemblyIndex = existingConstituency.assemblies.findIndex(a => a.name === assembly);
+
+        // If assembly not found
+        if (assemblyIndex === -1) {
+            return res.status(404).json({ error: "Assembly not found within the constituency" });
+        }
+
+        // Remove the assembly from the constituency's assemblies array
+        existingConstituency.assemblies.splice(assemblyIndex, 1);
+
+        // Save the updated district
+        await existingDistrict.save();
+
+        res.status(200).json({ message: "Assembly deleted successfully", district: existingDistrict });
+    } catch (error) {
+        console.error("Error deleting assembly:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+const deletePanchayath = async (req, res) => {
+    try {
+        const { district, constituency, assembly, panchayath } = req.body;
+
+        // Check if district, constituency, assembly, and panchayath are provided
+        if (!district || !constituency || !assembly || !panchayath) {
+            return res.status(400).json({ error: "Please provide all required fields." });
+        }
+
+        // Find the district with the provided name
+        const existingDistrict = await District.findOne({ name: district });
+
+        // If district not found
+        if (!existingDistrict) {
+            return res.status(404).json({ error: "District not found" });
+        }
+
+        // Find the constituency within the found district
+        const existingConstituency = existingDistrict.constituencies.find(c => c.name === constituency);
+
+        // If constituency not found
+        if (!existingConstituency) {
+            return res.status(404).json({ error: "Constituency not found within the district" });
+        }
+
+        // Find the assembly within the found constituency
+        const existingAssembly = existingConstituency.assemblies.find(a => a.name === assembly);
+
+        // If assembly not found
+        if (!existingAssembly) {
+            return res.status(404).json({ error: "Assembly not found within the constituency" });
+        }
+
+        // Find the index of the panchayath within the found assembly
+        const panchayathIndex = existingAssembly.panchayaths.findIndex(p => p.name === panchayath);
+
+        // If panchayath not found
+        if (panchayathIndex === -1) {
+            return res.status(404).json({ error: "Panchayath not found within the assembly" });
+        }
+
+        // Remove the panchayath from the assembly's panchayaths array
+        existingAssembly.panchayaths.splice(panchayathIndex, 1);
+
+        // Save the updated district
+        await existingDistrict.save();
+
+        res.status(200).json({ message: "Panchayath deleted successfully", district: existingDistrict });
+    } catch (error) {
+        console.error("Error deleting panchayath:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
 module.exports = {
     adminLogin,
     adminRegister,
@@ -938,5 +1100,9 @@ module.exports = {
     addPanchayath,
     getDistrict,
     getDistrictV2,
-    getDistrictV3
+    getDistrictV3,
+    deleteDistrict,
+    deleteConstituency,
+    deleteAssembly,
+    deletePanchayath
 }

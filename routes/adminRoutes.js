@@ -153,9 +153,9 @@ router.get('/districtV3',adminController.getDistrictV3);
 
 router.post('/gallery',galleryImage.single('image'),adminAuth,adminController.addGallery);
 router.post('/ad',ADImage.single('image'),adminAuth,adminController.addAd);
-router.post('/calendar-event',adminAuth,adminController.addCalendarEvent)
+router.post('/calendar-event',adminAuth,adminController.addCalendarEvent);
 router.post('/slogan',sloganImage.single('image'),adminController.addSlogan);
-router.post('/one-signal',OneImage.single('image'),adminAuth,adminController.sendNotification)
+router.post('/one-signal',OneImage.single('image'),adminAuth,adminController.sendNotification);
 router.post('/mandalam',adminController.addMandalam);
 router.post('/event',eventImage.single('image'),adminAuth,adminController.addEvent);
 router.post('/carousel',carouselImage.single('image'),adminAuth,adminController.addCarousel);
@@ -164,6 +164,10 @@ router.post('/add-district',adminAuth,adminController.addDistrict);
 router.post('/add-constituency',adminAuth,adminController.addConstituency);
 router.post('/add-assembly',adminAuth,adminController.addAssembly);
 router.post('/add-panchayath',adminAuth,adminController.addPanchayath);
+router.post('/delete-district',adminAuth,adminController.deleteDistrict);
+router.post('/delete-constituency',adminAuth,adminController.deleteConstituency);
+router.post('/delete-assembly',adminAuth,adminController.deleteAssembly);
+router.post('/delete-panchayath',adminAuth,adminController.deletePanchayath);
 
 
 router.delete('/user/:id',adminAuth,adminController.deleteUser);
