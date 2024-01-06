@@ -164,10 +164,13 @@ router.post('/add-district',adminAuth,adminController.addDistrict);
 router.post('/add-constituency',adminAuth,adminController.addConstituency);
 router.post('/add-assembly',adminAuth,adminController.addAssembly);
 router.post('/add-panchayath',adminAuth,adminController.addPanchayath);
+
+
 router.post('/delete-district',adminAuth,adminController.deleteDistrict);
 router.post('/delete-constituency',adminAuth,adminController.deleteConstituency);
 router.post('/delete-assembly',adminAuth,adminController.deleteAssembly);
 router.post('/delete-panchayath',adminAuth,adminController.deletePanchayath);
+
 
 
 router.delete('/user/:id',adminAuth,adminController.deleteUser);

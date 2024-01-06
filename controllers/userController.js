@@ -79,7 +79,7 @@ const register = async (req, res) => {
       email,
       password: hashedPassword,
       phoneNumber,
-      whatsappNumber: whatsappNumber || phoneNumber,
+      whatsappNumber:phoneNumber,
       date_of_birth,
       district,
       constituency,
