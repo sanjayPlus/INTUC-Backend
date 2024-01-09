@@ -516,11 +516,11 @@ const verifyForgotPasswordOTP = async (req, res) => {
 };
 const createIdCard = async (req, res) => {
   try {
-    // Assuming you have a User model defined using Mongoose
     const user = await User.findById(req.user.userId);
     if (!user) {
       return res.status(400).json({ error: "User not found" });
     }
+
     // Get the profile image from the request
     const profileImage = req.file;
 
@@ -528,9 +528,13 @@ const createIdCard = async (req, res) => {
     const canvas = createCanvas(400, 250); // Increased height for QR code and white background
     const ctx = canvas.getContext("2d");
 
-    // Draw white background
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Load and draw the background image
+    const backgroundImage = await loadImage('./idcard.jpg');
+    ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+    // Draw white background if needed for additional fields
+    // ctx.fillStyle = "white";
+    // ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Load the user's profile image
     const image = await loadImage(profileImage.path);
@@ -545,6 +549,13 @@ const createIdCard = async (req, res) => {
     ctx.fillText(`DOB: ${user.date_of_birth}`, 100, 120);
     if (user.blood_group) {
       ctx.fillText(`Blood Group: ${user.blood_group}`, 100, 150);
+    }
+    // Add additional fields like District and Panchayat if they exist in the User model
+    if (user.district) {
+      ctx.fillText(`District: ${user.district}`, 100, 150);
+    }
+    if (user.panchayath) {
+      ctx.fillText(`Panchayat: ${user.panchayath}`, 100, 180);
     }
 
     // Generate QR code with user ID
@@ -568,6 +579,7 @@ const createIdCard = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 const AddFeedBack = async (req, res) => {
   try {
     const { feedback, rating } = req.body;
