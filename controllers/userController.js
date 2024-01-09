@@ -551,7 +551,7 @@ const createIdCard = async (req, res) => {
         const dateParts = userDateOfBirth.split(' '); // Split at the space character
 
       // Get only the date part
-      const dateWithoutTime = dateParts[0]; // Assuming the date is the first part after splitting
+      const dateWithoutTime = dateParts[]; // Assuming the date is the first part after splitting
 
       // Then use this `dateWithoutTime` variable in your ctx.fillText for DOB
         ctx.fillText(`DOB: ${dateWithoutTime}`, 100, 120);
