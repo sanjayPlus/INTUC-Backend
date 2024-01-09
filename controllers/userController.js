@@ -529,7 +529,7 @@ const createIdCard = async (req, res) => {
     const ctx = canvas.getContext("2d");
 
     // Load and draw the background image
-    const backgroundImage = await loadImage('./idcard.jpg');
+    const backgroundImage = await loadImage(process.env.DOMAIN+'idcard.jpg');
     ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
     // Draw white background if needed for additional fields
