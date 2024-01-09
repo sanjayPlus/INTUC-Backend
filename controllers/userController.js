@@ -793,7 +793,6 @@ module.exports = {
   googleLogin,
   autoLogin,
   addVote,
-  emailLogin,
   updateProfileImage,
   appleLogin,
 };
