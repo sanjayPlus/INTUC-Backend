@@ -544,9 +544,9 @@ const createIdCard = async (req, res) => {
     // Draw text fields on the canvas
     ctx.font = "12px Arial";
     ctx.fillStyle = "black"; // Text color
-    ctx.fillText(`Name: ${user.name}`, 100, 30);
-    ctx.fillText(`Email: ${user.email}`, 100, 60);
-    ctx.fillText(`Phone: ${user.phoneNumber}`, 100, 90);
+    ctx.fillText(`Name: ${user.name}`, 120, 30);
+    ctx.fillText(`Email: ${user.email}`, 120, 60);
+    ctx.fillText(`Phone: ${user.phoneNumber}`, 120, 90);
       const userDateOfBirth = user.date_of_birth.toString(); // Convert to string if it's a Date object
 
 // Extract only the date part without the time component
@@ -554,18 +554,18 @@ const dateObject = new Date(userDateOfBirth);
 const formattedDate = dateObject.toDateString();
 
 // Use this `formattedDate` variable in your ctx.fillText for DOB
-ctx.fillText(`DOB: ${formattedDate}`, 100, 120);
+ctx.fillText(`DOB: ${formattedDate}`, 120, 120);
 
 
     if (user.blood_group) {
-      ctx.fillText(`Blood Group: ${user.blood_group}`, 100, 150);
+      ctx.fillText(`Blood Group: ${user.blood_group}`, 120, 150);
     }
     // Add additional fields like District and Panchayat if they exist in the User model
     if (user.district) {
-      ctx.fillText(`District: ${user.district}`, 100, 150);
+      ctx.fillText(`District: ${user.district}`, 120, 150);
     }
     if (user.panchayath) {
-      ctx.fillText(`Panchayat: ${user.panchayath}`, 100, 180);
+      ctx.fillText(`Panchayat: ${user.panchayath}`, 120, 180);
     }
 
     // Generate QR code with user ID
