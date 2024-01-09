@@ -526,6 +526,7 @@ const createIdCard = async (req, res) => {
 
     // Create a canvas for the ID card
     const canvas = createCanvas(500, 260);
+    //pixel
 
     const ctx = canvas.getContext("2d");
 
