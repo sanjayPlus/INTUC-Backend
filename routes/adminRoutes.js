@@ -130,48 +130,8 @@ const eventStorage = multer.diskStorage({
       fileSize: 20 * 1024 * 1024, // 20MB in bytes
     },
   });
-  const carouselStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      // destination is used to specify the path of the directory in which the files have to be stored
-      cb(null, "./public/carouselImage");
-    },
-    filename: function (req, file, cb) {
-      // It is the filename that is given to the saved file.
-      const uniqueSuffix =Date.now() + "-" + Math.round(Math.random() * 1e9);
-      cb(null, `${uniqueSuffix}-${file.originalname}`);
-      console.log(`${uniqueSuffix}-${file.originalname}`);
-      // console.log(file);
-    },
-  });
-  
-  // Configure storage engine instead of dest object.
-  const carouselImage = multer({
-    storage: carouselStorage,
-    limits: {
-      fileSize: 20 * 1024 * 1024, // 20MB in bytes
-    },
-  });
-  const carouselStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      // destination is used to specify the path of the directory in which the files have to be stored
-      cb(null, "./public/carouselImage");
-    },
-    filename: function (req, file, cb) {
-      // It is the filename that is given to the saved file.
-      const uniqueSuffix =Date.now() + "-" + Math.round(Math.random() * 1e9);
-      cb(null, `${uniqueSuffix}-${file.originalname}`);
-      console.log(`${uniqueSuffix}-${file.originalname}`);
-      // console.log(file);
-    },
-  });
-  
-  // Configure storage engine instead of dest object.
-  const carouselImage = multer({
-    storage: carouselStorage,
-    limits: {
-      fileSize: 20 * 1024 * 1024, // 20MB in bytes
-    },
-  });
+
+
   const calendarStorage = multer.diskStorage({
     destination: function (req, file, cb) {
       // destination is used to specify the path of the directory in which the files have to be stored
