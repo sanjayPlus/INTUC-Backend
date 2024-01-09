@@ -525,7 +525,7 @@ const createIdCard = async (req, res) => {
     const profileImage = req.file;
 
     // Create a canvas for the ID card
-    const canvas = createCanvas(1092, 714);
+    const canvas = createCanvas(750, 300);
 
     const ctx = canvas.getContext("2d");
 
@@ -547,7 +547,15 @@ const createIdCard = async (req, res) => {
     ctx.fillText(`Name: ${user.name}`, 100, 30);
     ctx.fillText(`Email: ${user.email}`, 100, 60);
     ctx.fillText(`Phone: ${user.phoneNumber}`, 100, 90);
-    ctx.fillText(`DOB: ${user.date_of_birth}`, 100, 120);
+      const userDateOfBirth = user.date_of_birth.toString(); // Convert to string
+        const dateParts = userDateOfBirth.split(' '); // Split at the space character
+
+      // Get only the date part
+      const dateWithoutTime = dateParts[0]; // Assuming the date is the first part after splitting
+
+      // Then use this `dateWithoutTime` variable in your ctx.fillText for DOB
+        ctx.fillText(`DOB: ${dateWithoutTime}`, 100, 120);
+
     if (user.blood_group) {
       ctx.fillText(`Blood Group: ${user.blood_group}`, 100, 150);
     }
