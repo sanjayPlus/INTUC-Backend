@@ -541,7 +541,7 @@ const createIdCard = async (req, res) => {
     ctx.drawImage(image, 10, 10, 80, 80);
 
     // Draw text fields on the canvas
-    ctx.font = "16px Arial";
+    ctx.font = "12px Arial";
     ctx.fillStyle = "black"; // Text color
     ctx.fillText(`Name: ${user.name}`, 100, 30);
     ctx.fillText(`Email: ${user.email}`, 100, 60);
