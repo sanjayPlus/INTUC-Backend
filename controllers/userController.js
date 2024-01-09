@@ -525,7 +525,8 @@ const createIdCard = async (req, res) => {
     const profileImage = req.file;
 
     // Create a canvas for the ID card
-    const canvas = createCanvas(400, 250); // Increased height for QR code and white background
+    const canvas = createCanvas(1092, 714);
+
     const ctx = canvas.getContext("2d");
 
     // Load and draw the background image
