@@ -9,11 +9,13 @@ const calendarSchema = new mongoose.Schema({
     },
     description:{
         type:String,
-        required:true,
+      
+    },
+    image:{
+        type:String,
     },
     date: {
         type: String,
-        required: true,
     },
     createdAt: {
         type: Date,

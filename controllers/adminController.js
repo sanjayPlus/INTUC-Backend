@@ -177,6 +177,8 @@ const addCalendarEvent = async (req, res) => {
     try {
         
         const { title, description,date  } = req.body;
+          req.body.image = req.file;
+        let imageObj = req.body.image;
         if (!date || !title || !description) {
         return res
             .status(400)
@@ -187,7 +189,7 @@ const addCalendarEvent = async (req, res) => {
         date,
         title,
         description,
-        
+        image: `${process.env.DOMAIN}/calendarImage/${imageObj.filename}` ||  "https://intucthrissur.com/webimg/chaticon.png",
         })
         res.status(201).json(calendar);
 
